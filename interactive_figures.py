@@ -3,6 +3,7 @@ import ipywidgets as widgets
 import numpy as np
 from scipy import optimize
 import isochrones
+from matplotlib.offsetbox import AnchoredText 
 
 def phase(t,t0,P):
     """ Calculate the orbital phase for a given time and period """
@@ -96,12 +97,14 @@ class RVCurve(widgets.HBox):
         # Calculate initial chi-squared for data points
         model = rv_keplerian(t1,self._t0,self._P,self._k1,self._w,self._e,self._vsys)
         chisq = chi2(rv1,model,e_rv1,dof=len(rv1)-6)
-        self.chisq1 = plt.text(0.97,0.9,'$\chi^{2}_{r}$ = %3.2f'%chisq,color='w',ha='right',\
-            transform=self.ax.transAxes,bbox=dict(facecolor='tab:red', alpha=0.5))
+        self.chisq1 = AnchoredText('$\chi^{2}_{r}$ = %3.2f'%chisq,loc='upper right',prop=dict(color='w'))
+        self.chisq1.patch.set(facecolor='tab:red',alpha=0.5)
+        self.ax.add_artist(self.chisq1)
         model = rv_keplerian(t2,self._t0,self._P,-self._k2,self._w,self._e,self._vsys)
         chisq = chi2(rv2,model,e_rv2,dof=len(rv2)-6)
-        self.chisq2 = plt.text(0.97,0.77,'$\chi^{2}_{r}$ = %3.2f'%chisq,color='w',ha='right',\
-            transform=self.ax.transAxes,bbox=dict(facecolor='tab:blue', alpha=0.5))
+        self.chisq2 = AnchoredText('$\chi^{2}_{r}$ = %3.2f'%chisq,loc='upper left',prop=dict(color='w'))
+        self.chisq2.patch.set(facecolor='tab:blue',alpha=0.5)
+        self.ax.add_artist(self.chisq2)
 
         # Define widgets
         self.P = widgets.FloatText(value=self._P,description='Period',step=1e-5)
@@ -136,10 +139,10 @@ class RVCurve(widgets.HBox):
     def update_chi2(self):
         model = rv_keplerian(self.t1,self.t0.value,self.P.value,self.k1.value,self.w.value,self.e.value,self.vsys.value)
         chi = chi2(self.rv1,model,self.e_rv1,dof=len(self.rv1)-6)
-        self.chisq1.set_text('$\chi^{2}_{r}$ = %3.2f'%chi)
+        self.chisq1.txt.set_text('$\chi^{2}_{r}$ = %3.2f'%chi)
         model = rv_keplerian(self.t2,self.t0.value,self.P.value,-self.k2.value,self.w.value,self.e.value,self.vsys.value)
         chi = chi2(self.rv2,model,self.e_rv2,dof=len(self.rv2)-6)
-        self.chisq2.set_text('$\chi^{2}_{r}$ = %3.2f'%chi)
+        self.chisq2.txt.set_text('$\chi^{2}_{r}$ = %3.2f'%chi)
 
     def update_points(self, change):
         """ Some trickery to move the error bars as well as the points """
@@ -209,8 +212,9 @@ class LightCurve(widgets.HBox):
         self.fig.set_label(' ')
         # Calculate initial string length
         str_len = string_length(phi,flux)
-        self.str_len = plt.text(0.97,0.05,'String length = %.2f'%str_len, \
-            transform=self.ax.transAxes,ha='right',color='w', bbox=dict(facecolor='tab:red', alpha=0.5))
+        self.str_len = AnchoredText('String length = %.2f'%str_len, loc='lower right',prop=dict(color='w'))
+        self.str_len.patch.set(facecolor='tab:red',alpha=0.5)
+        self.ax.add_artist(self.str_len)
 
         # Define widgets
         self.P = widgets.FloatText(value=self._P,description='Period (d)',step=1e-5)
@@ -236,7 +240,7 @@ class LightCurve(widgets.HBox):
         self.lc.set_xdata(phi[idx])
         self.lc.set_ydata(self.flux[idx])
         # Update the string length 
-        self.str_len.set_text('String length = %.2f'%string_length(phi, self.flux))
+        self.str_len.txt.set_text('String length = %.2f'%string_length(phi, self.flux))
     
     def update_show_string(self, change):
         self.str_len.set_visible(change.new)
@@ -311,6 +315,7 @@ class MassRadiusDiagram(widgets.HBox):
         self.show_isochrone = widgets.Checkbox(description='Adjustable isochrone',value=True)
         self.show_isochrones = widgets.Checkbox(description='Show isochrones',value=True)
         self.show_boundaries = widgets.Checkbox(description='Show boundaries',value=True)
+        self.show_grid = widgets.Checkbox(description='Show grid',value=False)
 
         # Monitor for updates
         self.m1.observe(self.update_points,'value')
@@ -321,9 +326,10 @@ class MassRadiusDiagram(widgets.HBox):
         self.show_isochrone.observe(self.update_show_isochrone,'value')
         self.show_isochrones.observe(self.update_show_isochrones,'value')
         self.show_boundaries.observe(self.update_show_boundaries,'value')
+        self.show_grid.observe(self.update_show_grid,'value')
 
         controls = widgets.VBox([self.m1,self.m2,self.r1,self.r2,self.iso_age,\
-            self.show_isochrone,self.show_isochrones,self.show_boundaries])
+            self.show_isochrone,self.show_isochrones,self.show_boundaries,self.show_grid])
 
         # Add to children
         self.children = [output,controls]        
@@ -352,4 +358,6 @@ class MassRadiusDiagram(widgets.HBox):
         for i in self.boundaries:
             i.set_visible(change.new)
 
+    def update_show_grid(self, change):
+        self.ax.grid(change.new)
 
