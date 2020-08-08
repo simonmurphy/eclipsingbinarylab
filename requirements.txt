@@ -3,3 +3,5 @@ scipy
 astropy
 matplotlib
 ipywidgets
+ipympl
+nodejs
