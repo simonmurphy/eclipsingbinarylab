@@ -60,7 +60,7 @@ class RVCurve(widgets.HBox):
         self.e_rv2 = e_rv2
 
         # Initital parameters
-        self._t0 = 8101.133
+        self._t0 = 0.0
         self._P = 0.5
         self._k1 = 50.0
         self._k2 = 50.0
@@ -109,8 +109,8 @@ class RVCurve(widgets.HBox):
         # Define widgets
         self.P = widgets.FloatText(value=self._P,description='Period',step=1e-5)
         self.t0 = widgets.FloatText(value=self._t0,description='$t_{0}$',step=1e-3)
-        self.k1 = widgets.IntSlider(min=0,max=100,step=1,value=self._k1,description='$K_{1}\sin i$')
-        self.k2 = widgets.IntSlider(min=0,max=200,step=1,value=self._k2,description='$K_{2}\sin i$')
+        self.k1 = widgets.IntSlider(min=0,max=100,step=1,value=self._k1,description='$K_{1}$')
+        self.k2 = widgets.IntSlider(min=0,max=200,step=1,value=self._k2,description='$K_{2}$')
         self.vsys = widgets.IntSlider(min=-50,max=50,step=1,value=self._vsys,description='$v_{sys}$')
         self.e = widgets.FloatSlider(min=0,max=0.99,step=0.01,value=self._e,description='$e$')
         self.w = widgets.IntSlider(min=0,max=360,step=1,value=self._w,description='$\omega$')
@@ -190,7 +190,7 @@ class LightCurve(widgets.HBox):
         self.t = t
         self.flux = flux
         
-        self._t0 = 8468.0
+        self._t0 = 0.0
         self._P = 1.0
 
         # Display phases between -0.25 and 0.75
@@ -219,7 +219,7 @@ class LightCurve(widgets.HBox):
         # Define widgets
         self.P = widgets.FloatText(value=self._P,description='Period (d)',step=1e-5)
         self.t0 = widgets.FloatText(value=self._t0,min=self._t0-1,max=self._t0+1,description='$t_{0}$ (d)',step=1e-3)
-        self.show_string = widgets.Checkbox(description='Show string', value=True)
+        self.show_string = widgets.Checkbox(description='Show string', value=False)
         self.show_grid = widgets.Checkbox(description='Show grid',value=False)
 
         # Monitor for updates
