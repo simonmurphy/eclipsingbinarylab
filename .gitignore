@@ -1,3 +1,5 @@
 
 *.pyc
 .ipynb_checkpoints/index-checkpoint.ipynb
+.ipynb_checkpoints/eclipsingbinarylab-checkpoint.ipynb
+.ipynb_checkpoints/test-checkpoint.ipynb

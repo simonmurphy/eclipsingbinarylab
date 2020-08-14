@@ -219,7 +219,7 @@ class LightCurve(widgets.HBox):
         # Define widgets
         self.P = widgets.FloatText(value=self._P,description='Period (d)',step=1e-5)
         self.t0 = widgets.FloatText(value=self._t0,min=self._t0-1,max=self._t0+1,description='$t_{0}$ (d)',step=1e-3)
-        self.show_string = widgets.Checkbox(description='Show string', value=False)
+        self.show_string = widgets.Checkbox(description='Show string', value=True)
         self.show_grid = widgets.Checkbox(description='Show grid',value=False)
 
         # Monitor for updates
@@ -360,4 +360,47 @@ class MassRadiusDiagram(widgets.HBox):
 
     def update_show_grid(self, change):
         self.ax.grid(change.new)
+
+class Test(widgets.HBox):
+    
+    def __init__(self, amplitude=0.5, freq=5.0):
+        super().__init__()
+        output = widgets.Output()
+
+        # Draw data points and initial fits
+        with output:
+            self.fig, self.ax = plt.subplots(constrained_layout=True, figsize=(6, 4))
+
+        # Plot a test curve
+        self.xx = np.arange(0, 2*np.pi,0.01)
+        self.sine, = plt.plot(self.xx, amplitude*np.sin(freq*self.xx))
+        plt.ylim(-1.1,1.1)
+        plt.title('Things seem to be working')
+        self.fig.canvas.toolbar_position = 'left'
+        self.fig.set_label(' ')
+
+
+        # Define widgets
+        self.freq = widgets.FloatSlider(value=freq,min=0,max=10,description='Frequency')
+        self.amplitude = widgets.FloatSlider(value=amplitude,min=0,max=1,step=0.01,description='Amplitude')
+        self.show_curve = widgets.Checkbox(value=True,description='Show curve')
+
+        # Monitor for updates
+        self.freq.observe(self.update_curve,'value')
+        self.amplitude.observe(self.update_curve,'value')
+        self.show_curve.observe(self.update_show_curve,'value')
+
+        controls = widgets.VBox([self.freq,self.amplitude,self.show_curve])
+
+        # Add to children
+        self.children = [output,controls]        
+
+    def update_curve(self, change):
+        new_curve = self.amplitude.value * np.sin(self.xx * self.freq.value)
+        self.sine.set_ydata(new_curve)
+
+    def update_show_curve(self,change):
+        self.sine.set_visible(change.new)
+
+
 
