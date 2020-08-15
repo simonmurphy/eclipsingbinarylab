@@ -215,11 +215,13 @@ class LightCurve(widgets.HBox):
         self.str_len = AnchoredText('String length = %.2f'%str_len, loc='lower right',prop=dict(color='w'))
         self.str_len.patch.set(facecolor='tab:red',alpha=0.5)
         self.ax.add_artist(self.str_len)
+        self.lc.set_linestyle('None') # make invisible initially
+        self.str_len.set_visible(False)
 
         # Define widgets
-        self.P = widgets.FloatText(value=self._P,description='Period (d)',step=1e-5)
+        self.P = widgets.FloatText(value=self._P,description='Period (d)',step=1e-6)
         self.t0 = widgets.FloatText(value=self._t0,min=self._t0-1,max=self._t0+1,description='$t_{0}$ (d)',step=1e-3)
-        self.show_string = widgets.Checkbox(description='Show string', value=True)
+        self.show_string = widgets.Checkbox(description='Show string', value=False)
         self.show_grid = widgets.Checkbox(description='Show grid',value=False)
 
         # Monitor for updates
