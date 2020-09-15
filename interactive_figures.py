@@ -60,8 +60,8 @@ class RVCurve(widgets.HBox):
         self.e_rv2 = e_rv2
 
         # Initital parameters
-        self._t0 = 0.0
-        self._P = 0.5
+        self._t0 = 8101.0
+        self._P = 0.8589
         self._k1 = 50.0
         self._k2 = 50.0
         self._vsys = 0.0
@@ -107,8 +107,8 @@ class RVCurve(widgets.HBox):
         self.ax.add_artist(self.chisq2)
 
         # Define widgets
-        self.P = widgets.FloatText(value=self._P,description='Period',step=1e-5)
-        self.t0 = widgets.FloatText(value=self._t0,description='$t_{0}$',step=1e-3)
+        self.P = widgets.FloatText(value=self._P,description='Period (d)',step=1e-5,style={'description_width': '10em'})
+        self.t0 = widgets.FloatText(value=self._t0,description='$t_{0}$ (BJD $-$ 2450000)',step=1e-3,style={'description_width': '10em'})
         self.k1 = widgets.IntSlider(min=0,max=100,step=1,value=self._k1,description='$K_{1}$')
         self.k2 = widgets.IntSlider(min=0,max=200,step=1,value=self._k2,description='$K_{2}$')
         self.vsys = widgets.IntSlider(min=-50,max=50,step=1,value=self._vsys,description='$v_{sys}$')
@@ -183,15 +183,15 @@ class RVCurve(widgets.HBox):
 
 class LightCurve(widgets.HBox):
         
-    def __init__(self, t, flux):
+    def __init__(self, t, flux, P=1.0, t0=8468.287, dP=1e-3):
         super().__init__()
         output = widgets.Output()
 
         self.t = t
         self.flux = flux
         
-        self._t0 = 0.0
-        self._P = 1.0
+        self._t0 = t0
+        self._P = P
 
         # Display phases between -0.25 and 0.75
         phi = phase(t,self._t0,self._P)
@@ -207,7 +207,7 @@ class LightCurve(widgets.HBox):
         plt.xlim(-0.25,0.75)
         plt.xlabel('Phase')
         plt.ylabel('Flux (normalised)')
-        plt.title('$TESS$ folded light curve')
+        plt.title('$TESS$ phased light curve')
         self.fig.canvas.toolbar_position = 'left'
         self.fig.set_label(' ')
         # Calculate initial string length
@@ -219,10 +219,10 @@ class LightCurve(widgets.HBox):
         self.str_len.set_visible(False)
 
         # Define widgets
-        self.P = widgets.FloatText(value=self._P,description='Period (d)',step=1e-6)
-        self.t0 = widgets.FloatText(value=self._t0,min=self._t0-1,max=self._t0+1,description='$t_{0}$ (d)',step=1e-3)
-        self.show_string = widgets.Checkbox(description='Show string', value=False)
-        self.show_grid = widgets.Checkbox(description='Show grid',value=False)
+        self.P = widgets.FloatText(value=self._P,description='Period (d)',step=dP,style={'description_width': '10em'})
+        self.t0 = widgets.FloatText(value=self._t0,min=self._t0-1,max=self._t0+1,description='$t_{0}$ (BJD $-$ 2450000)',step=1e-3,style={'description_width': '10em'})
+        self.show_string = widgets.Checkbox(description='Show string', value=False,style={'description_width': '10em'})
+        self.show_grid = widgets.Checkbox(description='Show grid',value=False,style={'description_width': '10em'})
 
         # Monitor for updates
         self.P.observe(self.update_points,'value')
